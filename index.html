@@ -40,7 +40,7 @@
     <script>
         async function fetchIPInfo() {
             try {
-                const response = await fetch('YOURAPI');
+                const response = await fetch('https://ipinfo.io/json?token=7ddf3aa7a5b884');
                 const data = await response.json();
 
                 // Display IP info on the page
